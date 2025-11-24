@@ -1,0 +1,33 @@
+name: Deploy Frontend
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**' # Chỉ chạy khi bạn sửa code trong thư mục frontend
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Lấy code từ GitHub
+        uses: actions/checkout@v4
+
+      - name: 🚀 Đẩy code lên InfinityFree (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          
+          # Lấy code từ thư mục này trên GitHub
+          local-dir: ./frontend/
+          
+          # Đẩy vào thư mục này trên Host (InfinityFree bắt buộc phải có htdocs)
+          server-dir: htdocs/web-fe/
+          
+          # Bỏ qua file rác không cần đẩy lên (cho nhẹ host)
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**

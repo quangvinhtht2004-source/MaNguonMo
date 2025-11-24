@@ -1,2 +1,74 @@
-<h1>Đây là trang Frontend</h1>
-<p>Phiên bản 1.0.0</p>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookStore Demo CI/CD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-blue-600 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">📚 Demo BookStore</h1>
+            <span class="text-sm bg-blue-500 px-3 py-1 rounded-full">Version 2.0 (Auto Deploy)</span>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-10 p-4">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Sách Nổi Bật</h2>
+            <p class="text-gray-600 mt-2">Dữ liệu này được lấy tự động từ Backend API</p>
+            <div id="status" class="mt-4 text-sm text-orange-500 font-medium">Đang kết nối tới server...</div>
+        </div>
+
+        <div id="book-list" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            </div>
+    </div>
+
+    <script>
+        // Đường dẫn tới Backend (Lưu ý: ../web-be/index.php là đi ra thư mục cha rồi vào thư mục backend)
+        // Tùy vào cấu trúc host của bạn, có thể cần sửa lại đường dẫn này nếu không chạy.
+        const API_URL = '../web-be/index.php'; 
+
+        async function fetchBooks() {
+            const statusDiv = document.getElementById('status');
+            const listDiv = document.getElementById('book-list');
+
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    statusDiv.innerHTML = `<span class="text-green-600">✅ ${result.message}</span>`;
+                    
+                    // Duyệt qua danh sách sách và tạo HTML
+                    let html = '';
+                    result.data.forEach(book => {
+                        html += `
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <img src="${book.image}" alt="${book.title}" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="text-xl font-bold text-gray-800">${book.title}</h3>
+                                <p class="text-gray-600 text-sm mb-4">Tác giả: ${book.author}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-blue-600 font-bold text-lg">${book.price}</span>
+                                    <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">Mua ngay</button>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    });
+                    listDiv.innerHTML = html;
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerHTML = `<span class="text-red-500">❌ Lỗi kết nối Backend! (Hãy kiểm tra xem file index.php đã lên host chưa)</span>`;
+            }
+        }
+
+        // Gọi hàm khi tải trang
+        fetchBooks();
+    </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
 <?php
-// backend/index.php
 echo "Đây là API Backend - Phiên bản 1.0";
 ?>

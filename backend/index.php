@@ -1,4 +1,4 @@
 <?php
 // backend/index.php
-echo "Hello world 2025";
+echo "Mã Nguồn Mở"
 ?>
